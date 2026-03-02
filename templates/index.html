@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IELTS Listening Module</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <style>
+    /* ── Global ──────────────────────────────────────── */
+    body {
+      background: #f0f4fb;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      color: #1a2340;
+      min-height: 100vh;
+    }
+
+    /* ── Navbar ──────────────────────────────────────── */
+    .navbar {
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 12px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+    .nav-logo {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff; font-weight: 800; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-title  { font-weight: 700; font-size: 17px; line-height: 1.2; }
+    .nav-sub    { font-size: 11px; color: #64748b; }
+    .strict-badge {
+      font-size: 11px; padding: 4px 12px; border-radius: 20px;
+      background: #fff5f5; border: 1px solid #fecaca; color: #dc2626;
+    }
+
+    /* ── Screens ─────────────────────────────────────── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── HOME ────────────────────────────────────────── */
+    .hero-wrap { max-width: 660px; margin: 0 auto; padding: 60px 20px 32px; text-align: center; }
+    .hero-badge {
+      display: inline-block; font-size: 11px; letter-spacing: 2px; color: #2563eb;
+      background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 20px;
+      padding: 5px 16px; margin-bottom: 20px; text-transform: uppercase; font-weight: 600;
+    }
+    .hero-title {
+      font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800;
+      line-height: 1.12; color: #0f172a; margin-bottom: 14px;
+    }
+    .hero-title span { color: #2563eb; }
+    .hero-sub { font-size: 16px; color: #64748b; line-height: 1.7; margin-bottom: 32px; }
+
+    .features-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 28px; }
+    .feat-tag {
+      font-size: 12px; padding: 6px 14px; border-radius: 20px;
+      background: #fff; border: 1px solid #e2e8f0; color: #475569;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .warn-box {
+      background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px;
+      padding: 13px 18px; font-size: 13.5px; color: #92400e;
+      text-align: left; margin-bottom: 24px;
+    }
+    .topic-wrap {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 14px;
+      padding: 20px; text-align: left; margin-bottom: 28px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+    .topic-lbl {
+      font-size: 11px; font-weight: 700; color: #64748b;
+      text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;
+    }
+    .topic-input {
+      border: 1.5px solid #e2e8f0 !important; border-radius: 10px !important;
+      font-size: 15px !important; padding: 11px 16px !important;
+      background: #f8fafc !important; color: #1a2340 !important; transition: all 0.2s;
+    }
+    .topic-input:focus {
+      border-color: #2563eb !important;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12) !important;
+      background: #fff !important;
+    }
+    .topic-input::placeholder { color: #cbd5e1; }
+    .btn-start {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff; border: none; border-radius: 12px;
+      padding: 15px 48px; font-size: 16px; font-weight: 700;
+      box-shadow: 0 6px 20px rgba(37,99,235,0.35);
+      transition: all 0.2s; cursor: pointer;
+    }
+    .btn-start:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(37,99,235,0.4); }
+    .btn-start:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .sec-overview-lbl {
+      font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
+      color: #94a3b8; font-weight: 700; margin-bottom: 12px;
+    }
+    .sec-card {
+      background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px;
+      padding: 22px; height: 100%; transition: all 0.2s;
+    }
+    .sec-card:hover { border-color: #93c5fd; box-shadow: 0 6px 20px rgba(37,99,235,0.1); transform: translateY(-2px); }
+    .sec-num { font-size: 30px; font-weight: 800; color: #dbeafe; margin-bottom: 8px; }
+    .sec-card-title { font-weight: 700; font-size: 15px; margin-bottom: 5px; color: #1e293b; }
+    .sec-card-sub { font-size: 12px; color: #94a3b8; }
+
+    /* ── GENERATING ──────────────────────────────────── */
+    .gen-wrap { max-width: 480px; margin: 80px auto; text-align: center; padding: 0 20px; }
+    .gen-ring {
+      width: 64px; height: 64px; margin: 0 auto 28px;
+      border: 4px solid #e2e8f0; border-top-color: #2563eb;
+      border-radius: 50%; animation: spin 0.85s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .gen-title { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+    .gen-sub { color: #64748b; font-size: 15px; margin-bottom: 24px; }
+    .gen-progress { height: 6px; border-radius: 4px; background: #e2e8f0; margin-bottom: 28px; overflow: hidden; }
+    .gen-bar { height: 100%; background: linear-gradient(90deg, #2563eb, #60a5fa); border-radius: 4px; transition: width 0.5s ease; }
+    .step-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 16px; border-radius: 10px; margin-bottom: 8px;
+      background: #f8fafc; border: 1.5px solid #e2e8f0;
+      font-size: 13px; color: #64748b; text-align: left; transition: all 0.3s;
+    }
+    .step-item.active { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; font-weight: 600; }
+    .step-item.done  { background: #f0fdf4; border-color: #86efac; color: #15803d; font-weight: 600; }
+
+    /* ── READ AHEAD ──────────────────────────────────── */
+    .ra-wrap { max-width: 780px; margin: 0 auto; padding: 32px 20px; }
+    .ra-header {
+      background: #fff; border: 1.5px solid #e2e8f0; border-radius: 16px;
+      padding: 26px; margin-bottom: 20px; box-shadow: 0 2px 14px rgba(0,0,0,0.05);
+    }
+    .ra-badge {
+      width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff; font-weight: 800; font-size: 20px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+    }
+    .ra-chip { font-size: 10px; letter-spacing: 3px; color: #2563eb; text-transform: uppercase; font-weight: 700; }
+    .ra-title { font-size: 21px; font-weight: 800; margin: 3px 0; }
+    .ra-context { font-size: 13px; color: #64748b; font-style: italic; margin: 0; }
+    .timer-num {
+      font-size: 38px; font-weight: 800; color: #2563eb;
+      font-variant-numeric: tabular-nums; line-height: 1;
+    }
+    .timer-num.urgent { color: #dc2626; animation: blink 1s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.45} }
+    .timer-lbl { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+    .ra-prog-wrap { height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 18px; overflow: hidden; }
+    .ra-prog-bar { height: 100%; background: linear-gradient(90deg, #2563eb, #60a5fa); border-radius: 2px; transition: width 1s linear; }
+
+    .audio-src-card {
+      background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px;
+      padding: 20px 22px; margin-bottom: 16px;
+    }
+    .audio-src-lbl { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+    .btn-asrc {
+      padding: 9px 20px; border-radius: 9px; font-size: 13px; font-weight: 500;
+      border: 1.5px solid #e2e8f0; background: #f8fafc; color: #64748b;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-asrc:hover  { border-color: #93c5fd; color: #2563eb; background: #eff6ff; }
+    .btn-asrc.active { border-color: #2563eb; color: #2563eb; background: #eff6ff; font-weight: 700; }
+
+    .q-prev-card { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 20px 22px; }
+    .q-prev-lbl { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+    .q-prev-item {
+      padding: 10px 14px; border-radius: 8px; background: #f8fafc;
+      border: 1px solid #e2e8f0; font-size: 13.5px; color: #475569; margin-bottom: 8px;
+    }
+    .q-prev-num { color: #2563eb; font-weight: 700; font-size: 12px; margin-right: 8px; }
+
+    /* ── TEST SCREEN ─────────────────────────────────── */
+    .test-wrap { max-width: 780px; margin: 0 auto; padding: 28px 20px; }
+    .test-prog-lbl { font-size: 12px; color: #64748b; font-weight: 600; }
+
+    .audio-card {
+      background: #fff; border: 1.5px solid #e2e8f0; border-radius: 16px;
+      padding: 20px 24px; margin-bottom: 26px;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.05); transition: all 0.35s;
+    }
+    .audio-card.playing { border-color: #93c5fd; background: #eff6ff; }
+    .audio-card.ended   { border-color: #86efac; background: #f0fdf4; }
+    .audio-circle {
+      width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
+      background: #eff6ff; border: 1.5px solid #bfdbfe;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: #2563eb; transition: all 0.3s;
+    }
+    .audio-circle.playing { background: #dbeafe; animation: audioglow 2s infinite; }
+    .audio-circle.ended   { background: #dcfce7; border-color: #86efac; color: #16a34a; }
+    @keyframes audioglow { 0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,0.25)} 50%{box-shadow:0 0 0 10px rgba(37,99,235,0)} }
+    .audio-status-txt { font-size: 14px; font-weight: 600; color: #1e293b; }
+    .audio-warn-txt   { font-size: 12px; color: #dc2626; margin-top: 3px; }
+    .waveform { display: flex; gap: 3px; align-items: center; height: 24px; margin-top: 5px; }
+    .waveform span {
+      display: inline-block; width: 3px; background: #2563eb; border-radius: 2px;
+      animation: wave 0.75s ease-in-out infinite;
+    }
+    .waveform span:nth-child(1){height:6px;animation-delay:0s}
+    .waveform span:nth-child(2){height:14px;animation-delay:.08s}
+    .waveform span:nth-child(3){height:22px;animation-delay:.16s}
+    .waveform span:nth-child(4){height:10px;animation-delay:.24s}
+    .waveform span:nth-child(5){height:18px;animation-delay:.32s}
+    .waveform span:nth-child(6){height:8px;animation-delay:.40s}
+    .waveform span:nth-child(7){height:16px;animation-delay:.48s}
+    .waveform span:nth-child(8){height:10px;animation-delay:.56s}
+    @keyframes wave { 0%,100%{transform:scaleY(1)} 50%{transform:scaleY(0.25)} }
+    .btn-play {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff; border: none; border-radius: 10px;
+      padding: 11px 24px; font-size: 14px; font-weight: 700;
+      cursor: pointer; white-space: nowrap; transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+    }
+    .btn-play:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,0.4); }
+    .btn-play:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* Question cards */
+    .q-card {
+      background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px;
+      padding: 24px; margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: border-color 0.2s;
+    }
+    .q-card.answered { border-color: #93c5fd; box-shadow: 0 2px 12px rgba(37,99,235,0.1); }
+    .q-meta {
+      font-size: 11px; color: #2563eb; font-weight: 700;
+      letter-spacing: 1px; margin-bottom: 8px; text-transform: uppercase;
+    }
+    .q-prompt { font-size: 15.5px; color: #1e293b; line-height: 1.7; margin-bottom: 16px; font-weight: 500; }
+    .word-badge {
+      display: inline-block; font-size: 11px; padding: 3px 12px;
+      border-radius: 20px; background: #fffbeb; border: 1px solid #fde68a;
+      color: #92400e; margin-bottom: 12px; font-weight: 600;
+    }
+    .q-input {
+      width: 100%; border: 1.5px solid #e2e8f0; border-radius: 10px;
+      padding: 11px 16px; font-size: 15px; color: #1a2340;
+      background: #f8fafc; outline: none; transition: all 0.2s; font-family: inherit;
+    }
+    .q-input:focus { border-color: #2563eb; background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    .q-input::placeholder { color: #cbd5e1; }
+
+    /* Multiple choice */
+    .mc-opt {
+      padding: 12px 18px; border-radius: 10px; cursor: pointer;
+      border: 1.5px solid #e2e8f0; background: #f8fafc;
+      color: #475569; font-size: 14.5px; margin-bottom: 9px;
+      transition: all 0.15s; user-select: none; font-weight: 500;
+    }
+    .mc-opt:hover { border-color: #93c5fd; background: #eff6ff; color: #1d4ed8; }
+    .mc-opt.sel { border-color: #2563eb; background: #eff6ff; color: #1d4ed8; font-weight: 700; }
+
+    /* Matching & diagram */
+    .match-row { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+    .match-item { font-size: 14px; color: #475569; min-width: 140px; font-weight: 500; }
+    .match-arrow { color: #2563eb; font-size: 16px; font-weight: 700; }
+    .q-select {
+      border: 1.5px solid #e2e8f0; border-radius: 9px;
+      padding: 9px 14px; font-size: 14px; color: #1a2340;
+      background: #f8fafc; cursor: pointer; outline: none;
+      min-width: 200px; font-family: inherit; transition: all 0.2s;
+    }
+    .q-select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); background: #fff; }
+    .diag-wrap { max-width: 300px; margin: 0 auto 20px; }
+
+    .next-hint { font-size: 12px; color: #94a3b8; margin-bottom: 10px; }
+    .btn-next {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff; border: none; border-radius: 12px;
+      padding: 14px 42px; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: all 0.2s;
+      box-shadow: 0 6px 18px rgba(37,99,235,0.3);
+    }
+    .btn-next:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(37,99,235,0.4); }
+    .btn-next:disabled { background: #e2e8f0; color: #94a3b8; box-shadow: none; cursor: not-allowed; transform: none; }
+
+    /* ── RESULTS ─────────────────────────────────────── */
+    .results-wrap { max-width: 780px; margin: 0 auto; padding: 48px 20px; }
+    .results-chip {
+      display: inline-block; font-size: 11px; letter-spacing: 2px;
+      background: #f0fdf4; border: 1px solid #86efac; color: #15803d;
+      border-radius: 20px; padding: 5px 16px; text-transform: uppercase;
+      font-weight: 700; margin-bottom: 14px;
+    }
+    .results-title { font-size: 36px; font-weight: 800; color: #0f172a; margin-bottom: 24px; }
+    .band-box {
+      display: inline-block; padding: 28px 56px;
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border: 2px solid #93c5fd; border-radius: 20px; margin-bottom: 22px;
+      box-shadow: 0 6px 24px rgba(37,99,235,0.15);
+    }
+    .band-lbl { font-size: 11px; letter-spacing: 3px; color: #64748b; text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
+    .band-val { font-size: 72px; font-weight: 800; color: #2563eb; line-height: 1; }
+    .results-sub { color: #64748b; font-size: 16px; margin-bottom: 24px; }
+    .sec-pills { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .sec-pill {
+      padding: 9px 20px; border-radius: 10px;
+      background: #fff; border: 1.5px solid #e2e8f0; font-size: 14px; font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .sec-pill .lbl { color: #2563eb; margin-right: 6px; }
+
+    .review-title { font-size: 22px; font-weight: 800; margin: 36px 0 16px; color: #0f172a; }
+    .accordion-item { border-radius: 12px !important; margin-bottom: 10px; border: 1.5px solid #e2e8f0 !important; overflow: hidden; }
+    .accordion-button { font-weight: 700; font-size: 15px; background: #fff !important; color: #1a2340 !important; }
+    .accordion-button:not(.collapsed) { background: #eff6ff !important; color: #1d4ed8 !important; box-shadow: none !important; }
+    .accordion-body { background: #f8fafc; padding: 16px 22px; }
+    .rev-row {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 0; border-bottom: 1px solid #f1f5f9; font-size: 13.5px;
+    }
+    .rev-row:last-child { border-bottom: none; }
+    .rev-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+    .rev-prompt  { color: #64748b; font-size: 12px; margin-bottom: 3px; }
+    .rev-correct { color: #16a34a; font-weight: 600; }
+    .rev-wrong   { color: #dc2626; font-weight: 600; }
+    .rev-expected{ color: #16a34a; font-size: 12px; margin-top: 3px; }
+
+    .btn-new-test {
+      border: 2px solid #2563eb; color: #2563eb; background: #fff;
+      border-radius: 12px; padding: 13px 40px; font-size: 15px;
+      font-weight: 700; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-new-test:hover { background: #eff6ff; }
+
+    @media (max-width: 576px) {
+      .hero-title { font-size: 2rem; }
+      .band-val { font-size: 56px; }
+      .band-box { padding: 22px 36px; }
+      .timer-num { font-size: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="d-flex align-items-center gap-3">
+    <div class="nav-logo">IL</div>
+    <div>
+      <div class="nav-title">IELTS Listening</div>
+      <div class="nav-sub">AI-Powered · Free with Ollama</div>
+    </div>
+  </div>
+  <div class="d-flex align-items-center gap-2">
+    <span class="strict-badge"><i class="bi bi-shield-lock-fill me-1"></i>Strict Mode</span>
+    <button class="btn btn-sm btn-outline-secondary" id="btnRestart" onclick="restartApp()"
+      style="display:none; border-radius:8px; font-weight:600;">
+      <i class="bi bi-arrow-counterclockwise me-1"></i>Restart
+    </button>
+  </div>
+</nav>
+
+<!-- ── HOME ──────────────────────────────────────────────────────────────── -->
+<div id="screen-home" class="screen active">
+  <div class="hero-wrap">
+    <div class="hero-badge">British Council · IDP · Cambridge Assessment</div>
+    <h1 class="hero-title">AI-Generated<br/><span>IELTS Listening</span></h1>
+    <p class="hero-sub">Every test is unique. Powered by Mistral via Ollama.<br/>4 Sections · 20 Questions · Real Exam Conditions</p>
+
+    <div class="features-row">
+      <span class="feat-tag"><i class="bi bi-cpu me-1"></i>AI Generated</span>
+      <span class="feat-tag"><i class="bi bi-soundwave me-1"></i>TTS Audio</span>
+      <span class="feat-tag"><i class="bi bi-upload me-1"></i>Upload Audio</span>
+      <span class="feat-tag"><i class="bi bi-pencil me-1"></i>Fill in Blank</span>
+      <span class="feat-tag"><i class="bi bi-ui-radios me-1"></i>Multiple Choice</span>
+      <span class="feat-tag"><i class="bi bi-link-45deg me-1"></i>Matching</span>
+      <span class="feat-tag"><i class="bi bi-diagram-3 me-1"></i>Diagram Label</span>
+      <span class="feat-tag"><i class="bi bi-graph-up me-1"></i>Band Score</span>
+    </div>
+
+    <div class="warn-box">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <strong>Strict Exam Mode:</strong> Audio plays once only. No pause. No rewind. Just like the real IELTS test.
+    </div>
+
+    <div class="topic-wrap">
+      <div class="topic-lbl">Optional: Topic Theme</div>
+      <input type="text" id="topicInput" class="form-control topic-input"
+        placeholder="e.g. Environment, Healthcare, Technology, Travel..."/>
+      <div class="form-text mt-2" style="color:#94a3b8; font-size:12px;">
+        Leave blank for a random IELTS-style topic
+      </div>
+    </div>
+
+    <button class="btn-start" id="btnStart" onclick="startTest()">
+      <i class="bi bi-stars me-2"></i>Generate &amp; Begin Test
+      <span id="startSpinner" class="spinner-border spinner-border-sm ms-2" style="display:none"></span>
+    </button>
+    <div id="homeErr" class="mt-3 fw-semibold" style="display:none; font-size:14px; color:#dc2626;"></div>
+  </div>
+
+  <!-- Section cards -->
+  <div class="container-lg pb-5">
+    <p class="sec-overview-lbl">Test Structure</p>
+    <div class="row g-3">
+      <div class="col-sm-6 col-lg-3">
+        <div class="sec-card">
+          <div class="sec-num">01</div>
+          <div class="sec-card-title">Social Conversation</div>
+          <div class="sec-card-sub">Two speakers · Everyday context · Easy</div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="sec-card">
+          <div class="sec-num">02</div>
+          <div class="sec-card-title">Community Monologue</div>
+          <div class="sec-card-sub">Single speaker · Public context · Medium</div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="sec-card">
+          <div class="sec-num">03</div>
+          <div class="sec-card-title">Academic Discussion</div>
+          <div class="sec-card-sub">Students or tutor · Project based · Hard</div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="sec-card">
+          <div class="sec-num">04</div>
+          <div class="sec-card-title">Academic Lecture</div>
+          <div class="sec-card-sub">Complex topic · Monologue · Very Hard</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── GENERATING ──────────────────────────────────────────────────────────── -->
+<div id="screen-generating" class="screen">
+  <div class="gen-wrap">
+    <div class="gen-ring"></div>
+    <h4 class="gen-title">Generating Your Test</h4>
+    <p id="genStatus" class="gen-sub">Starting Mistral...</p>
+    <div class="gen-progress">
+      <div id="genBar" class="gen-bar" style="width:5%"></div>
+    </div>
+    <div id="genSteps"></div>
+  </div>
+</div>
+
+<!-- ── READ AHEAD ──────────────────────────────────────────────────────────── -->
+<div id="screen-readahead" class="screen">
+  <div class="ra-wrap">
+    <div class="ra-header">
+      <div class="d-flex align-items-center gap-3">
+        <div class="ra-badge" id="raBadge">1</div>
+        <div>
+          <div class="ra-chip">Read Ahead</div>
+          <div class="ra-title" id="raTitle">Section 1</div>
+          <div class="ra-context" id="raContext"></div>
+        </div>
+        <div class="ms-auto text-end">
+          <div class="timer-num" id="raTimer">00:45</div>
+          <div class="timer-lbl">until audio plays</div>
+        </div>
+      </div>
+      <div class="ra-prog-wrap">
+        <div class="ra-prog-bar" id="raProgBar" style="width:100%"></div>
+      </div>
+    </div>
+
+    <!-- Audio source -->
+    <div class="audio-src-card">
+      <div class="audio-src-lbl">Audio Source</div>
+      <div class="d-flex gap-2 flex-wrap mt-1">
+        <button class="btn-asrc active" id="btnTTS" onclick="setAudioMode('tts')">
+          <i class="bi bi-soundwave me-1"></i>Text-to-Speech
+        </button>
+        <button class="btn-asrc" id="btnUpload" onclick="triggerUpload()">
+          <i class="bi bi-cloud-upload me-1"></i>Upload Audio
+        </button>
+        <input type="file" id="audioFileInput" accept="audio/*" onchange="handleUpload(event)" style="display:none"/>
+      </div>
+      <div id="uploadStatus" class="mt-2" style="display:none; font-size:12px; color:#16a34a; font-weight:600;">
+        <i class="bi bi-check-circle-fill me-1"></i><span id="uploadName"></span>
+      </div>
+    </div>
+
+    <!-- Questions preview -->
+    <div class="q-prev-card">
+      <div class="q-prev-lbl">Questions Preview</div>
+      <div id="raQPreview" class="mt-1"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TEST ───────────────────────────────────────────────────────────────── -->
+<div id="screen-test" class="screen">
+  <div class="test-wrap">
+    <!-- Progress bar -->
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      <span class="test-prog-lbl" id="testSecLbl">Section 1 of 4</span>
+      <span class="test-prog-lbl" id="testQCount"></span>
+    </div>
+    <div class="progress mb-4" style="height:5px; border-radius:3px; background:#e2e8f0;">
+      <div id="testProgBar" class="progress-bar"
+        style="background:linear-gradient(90deg,#2563eb,#60a5fa); border-radius:3px; transition:width 0.4s;"></div>
+    </div>
+
+    <!-- Audio card -->
+    <div class="audio-card" id="audioCard">
+      <div class="d-flex align-items-center gap-3">
+        <div class="audio-circle" id="audioCircle"><i class="bi bi-play-fill"></i></div>
+        <div class="flex-grow-1">
+          <div id="audioStatusTxt" class="audio-status-txt">Press Play to start audio</div>
+          <div id="audioWave" class="waveform" style="display:none">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div id="audioWarnTxt" class="audio-warn-txt">
+            <i class="bi bi-exclamation-triangle me-1"></i>Plays once only — no pause or rewind
+          </div>
+        </div>
+        <button class="btn-play" id="btnPlay" onclick="playAudio()">
+          <i class="bi bi-play-fill me-1"></i>Play
+        </button>
+      </div>
+      <audio id="uploadedAudioEl" style="display:none"></audio>
+    </div>
+
+    <!-- Question cards -->
+    <div id="testQuestions"></div>
+
+    <!-- Next / Submit -->
+    <div class="text-end mt-3 mb-5">
+      <div id="nextHint" class="next-hint">Answer all questions to continue</div>
+      <button class="btn-next" id="btnNext" onclick="goNext()" disabled>
+        <span id="btnNextTxt">Next Section →</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── RESULTS ─────────────────────────────────────────────────────────────── -->
+<div id="screen-results" class="screen">
+  <div class="results-wrap text-center">
+    <div class="results-chip">Test Complete</div>
+    <h2 class="results-title">Your Results</h2>
+    <div class="band-box">
+      <div class="band-lbl">IELTS Band Score</div>
+      <div class="band-val" id="bandVal">—</div>
+    </div>
+    <p class="results-sub" id="resultsSub"></p>
+    <div class="sec-pills" id="secPills"></div>
+
+    <div class="text-start">
+      <div class="review-title">Detailed Review</div>
+      <div class="accordion" id="reviewAcc"></div>
+    </div>
+
+    <div class="mt-5">
+      <button class="btn-new-test" onclick="restartApp()">
+        <i class="bi bi-arrow-counterclockwise me-2"></i>Generate New Test
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ── State ─────────────────────────────────────────────────────────────────────
+const S = {
+  sections: [], currentSection: 0, answers: {},
+  audioMode: 'tts', uploadedURL: null,
+  audioPlayed: false, audioPlaying: false,
+  raInterval: null, raTotalSec: 45, topic: ''
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const fmt = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  $(`screen-${name}`).classList.add('active');
+  $('btnRestart').style.display = name === 'home' ? 'none' : '';
+}
+
+function typeLabel(t) {
+  return {
+    fill_blank: 'Fill in Blank',
+    multiple_choice: 'Multiple Choice',
+    matching: 'Matching',
+    diagram_label: 'Diagram Label'
+  }[t] || t;
+}
+
+// ── Start Test ────────────────────────────────────────────────────────────────
+async function startTest() {
+  S.topic = $('topicInput').value.trim();
+  S.sections = []; S.answers = {}; S.currentSection = 0;
+  $('btnStart').disabled = true;
+  $('startSpinner').style.display = '';
+  $('homeErr').style.display = 'none';
+  showScreen('generating');
+
+  // Build step indicators
+  const stepsEl = $('genSteps');
+  stepsEl.innerHTML = '';
+  const labels = [
+    'Section 1: Social Conversation',
+    'Section 2: Community Monologue',
+    'Section 3: Academic Discussion',
+    'Section 4: Academic Lecture'
+  ];
+  labels.forEach((lbl, i) => {
+    stepsEl.innerHTML += `<div class="step-item" id="step-${i}">
+      <span id="step-icon-${i}">⏳</span> ${lbl}
+    </div>`;
+  });
+
+  for (let i = 0; i < 4; i++) {
+    $(`step-${i}`).classList.add('active');
+    $(`step-icon-${i}`).textContent = '🔄';
+    $('genStatus').textContent = `Generating Section ${i+1} of 4 with Mistral...`;
+    $('genBar').style.width = `${i * 25 + 5}%`;
+
+    try {
+      const res = await fetch('/api/generate-section', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ section_number: i + 1, topic: S.topic })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.detail || 'Generation failed');
+      S.sections.push(data.section);
+      $(`step-${i}`).classList.remove('active');
+      $(`step-${i}`).classList.add('done');
+      $(`step-icon-${i}`).textContent = '✅';
+      $('genBar').style.width = `${(i+1) * 25}%`;
+    } catch (err) {
+      showScreen('home');
+      $('homeErr').style.display = '';
+      $('homeErr').textContent = '⚠ ' + err.message;
+      $('btnStart').disabled = false;
+      $('startSpinner').style.display = 'none';
+      return;
+    }
+  }
+
+  $('genStatus').textContent = 'All sections ready!';
+  await sleep(500);
+  $('btnStart').disabled = false;
+  $('startSpinner').style.display = 'none';
+  beginSection(0);
+}
+
+// ── Read Ahead ────────────────────────────────────────────────────────────────
+function beginSection(idx) {
+  S.currentSection = idx;
+  S.audioMode = 'tts'; S.uploadedURL = null;
+  S.audioPlayed = false; S.audioPlaying = false;
+  window.speechSynthesis.cancel();
+
+  const sec = S.sections[idx];
+  S.raTotalSec = idx < 2 ? 45 : 60;
+  let timer = S.raTotalSec;
+
+  $('raBadge').textContent = sec.id;
+  $('raTitle').textContent = sec.title;
+  $('raContext').textContent = sec.context;
+  $('raTimer').textContent = fmt(timer);
+  $('raTimer').classList.remove('urgent');
+  $('raProgBar').style.transition = 'none';
+  $('raProgBar').style.width = '100%';
+  $('btnTTS').classList.add('active');
+  $('btnUpload').classList.remove('active');
+  $('uploadStatus').style.display = 'none';
+
+  // Question preview
+  const prev = $('raQPreview'); prev.innerHTML = '';
+  sec.questions.forEach(q => {
+    prev.innerHTML += `<div class="q-prev-item">
+      <span class="q-prev-num">Q${q.id}</span>
+      ${typeLabel(q.type)}
+      ${q.type === 'fill_blank' ? `<span style="font-size:11px;color:#94a3b8;margin-left:4px">(${q.wordLimit})</span>` : ''}
+    </div>`;
+  });
+
+  showScreen('readahead');
+  clearInterval(S.raInterval);
+  S.raInterval = setInterval(() => {
+    timer--;
+    $('raTimer').textContent = fmt(timer);
+    $('raProgBar').style.transition = 'width 1s linear';
+    $('raProgBar').style.width = `${(timer / S.raTotalSec) * 100}%`;
+    if (timer <= 10) $('raTimer').classList.add('urgent');
+    if (timer <= 0) { clearInterval(S.raInterval); showTestScreen(); }
+  }, 1000);
+}
+
+// ── Test Screen ───────────────────────────────────────────────────────────────
+function showTestScreen() {
+  const sec = S.sections[S.currentSection];
+  const total = S.sections.length;
+  const idx = S.currentSection;
+
+  $('testSecLbl').textContent = `${sec.title} of ${total}`;
+  $('testQCount').textContent = `${sec.questions.length} questions`;
+  $('testProgBar').style.width = `${((idx + 1) / total) * 100}%`;
+
+  setAudioUI('idle');
+  $('btnNext').disabled = true;
+  $('btnNextTxt').textContent = idx === total - 1 ? 'Submit Test' : `Next: Section ${sec.id + 1} →`;
+
+  const qWrap = $('testQuestions');
+  qWrap.innerHTML = '';
+  sec.questions.forEach(q => qWrap.appendChild(buildQCard(q)));
+
+  if (S.audioMode === 'upload' && S.uploadedURL) {
+    const a = $('uploadedAudioEl');
+    a.src = S.uploadedURL;
+    a.onended = onAudioEnd;
+    a.onplay = () => setAudioUI('playing');
+  }
+
+  showScreen('test');
+  checkDone();
+}
+
+function setAudioUI(state) {
+  const card = $('audioCard'), circle = $('audioCircle');
+  const status = $('audioStatusTxt'), wave = $('audioWave');
+  const warn = $('audioWarnTxt'), btn = $('btnPlay');
+
+  card.classList.remove('playing', 'ended');
+  circle.classList.remove('playing', 'ended');
+
+  if (state === 'idle') {
+    circle.innerHTML = '<i class="bi bi-play-fill"></i>';
+    status.textContent = S.audioMode === 'upload' && S.uploadedURL
+      ? 'Uploaded audio ready — Press Play'
+      : 'TTS audio ready — Press Play';
+    wave.style.display = 'none'; warn.style.display = '';
+    btn.disabled = false; btn.style.display = '';
+  } else if (state === 'playing') {
+    card.classList.add('playing'); circle.classList.add('playing');
+    circle.innerHTML = '<i class="bi bi-soundwave"></i>';
+    status.textContent = 'Audio playing… listen carefully';
+    wave.style.display = 'flex'; warn.style.display = 'none';
+    btn.disabled = true; btn.style.display = 'none';
+  } else if (state === 'ended') {
+    card.classList.add('ended'); circle.classList.add('ended');
+    circle.innerHTML = '<i class="bi bi-check-lg"></i>';
+    status.textContent = 'Audio complete — answer the questions below';
+    wave.style.display = 'none'; warn.style.display = 'none';
+    btn.style.display = 'none';
+  }
+}
+
+function playAudio() {
+  if (S.audioPlayed) return;
+  S.audioPlayed = true; S.audioPlaying = true;
+  if (S.audioMode === 'upload' && S.uploadedURL) {
+    const a = $('uploadedAudioEl');
+    a.src = S.uploadedURL; a.onended = onAudioEnd;
+    setAudioUI('playing'); a.play();
+  } else {
+    playTTS();
+  }
+}
+
+function playTTS() {
+  const synth = window.speechSynthesis; synth.cancel();
+  const sec = S.sections[S.currentSection];
+  const u = new SpeechSynthesisUtterance(sec.ttsScript);
+  u.rate = 0.87; u.pitch = 1.0;
+  const voices = synth.getVoices();
+  const v = voices.find(x => x.lang === 'en-GB')
+         || voices.find(x => x.lang === 'en-AU')
+         || voices.find(x => x.lang.startsWith('en'));
+  if (v) u.voice = v;
+  u.onstart = () => setAudioUI('playing');
+  u.onend = onAudioEnd;
+  synth.speak(u);
+  setTimeout(() => { if (S.audioPlaying) setAudioUI('playing'); }, 300);
+}
+
+function onAudioEnd() {
+  S.audioPlaying = false;
+  setAudioUI('ended');
+  checkDone();
+}
+
+// ── Question Card Builder ─────────────────────────────────────────────────────
+function buildQCard(q) {
+  const card = document.createElement('div');
+  card.className = 'q-card'; card.id = `qc-${q.id}`;
+
+  let h = `<div class="q-meta">Q${q.id} · ${typeLabel(q.type)}</div>
+            <div class="q-prompt">${q.prompt}</div>`;
+
+  if (q.type === 'fill_blank') {
+    h += `<div class="word-badge">✏ ${q.wordLimit}</div>
+          <input type="text" class="q-input" id="inp-${q.id}"
+            placeholder="Type your answer here..."
+            oninput="recAns(${q.id}, this.value)"/>`;
+
+  } else if (q.type === 'multiple_choice') {
+    h += `<div id="mc-${q.id}">`;
+    const letters = ['A','B','C','D'];
+    q.options.forEach((opt, idx) => {
+      // Auto-add A/B/C/D prefix if model omitted it
+      const hasPrefix = /^[A-D][.)\s]/.test(opt.trim());
+      const label = hasPrefix ? opt : `${letters[idx]}. ${opt}`;
+      const letter = letters[idx];
+      h += `<div class="mc-opt" onclick="pickMC(${q.id},'${letter}',this)">${label}</div>`;
+    });
+    h += `</div>`;
+
+  } else if (q.type === 'matching') {
+    q.items.forEach(item => {
+      const si = item.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+      h += `<div class="match-row">
+              <span class="match-item">${item}</span>
+              <span class="match-arrow"><i class="bi bi-arrow-right"></i></span>
+              <select class="q-select" onchange="recMatch(${q.id},'${si}',this.value)">
+                <option value="">Select answer...</option>
+                ${q.options.map(o => `<option value="${o}">${o}</option>`).join('')}
+              </select>
+            </div>`;
+    });
+
+  } else if (q.type === 'diagram_label') {
+    h += buildDiagramSVG(q);
+    q.labels.forEach(lb => {
+      const sl = lb.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+      h += `<div class="match-row">
+              <span class="match-item">${lb}</span>
+              <span class="match-arrow"><i class="bi bi-arrow-right"></i></span>
+              <select class="q-select" onchange="recMatch(${q.id},'${sl}',this.value)">
+                <option value="">Select answer...</option>
+                ${q.options.map(o => `<option value="${o}">${o}</option>`).join('')}
+              </select>
+            </div>`;
+    });
+  }
+
+  card.innerHTML = h;
+  return card;
+}
+
+function buildDiagramSVG(q) {
+  const type = q.diagramType || 'triangle';
+  if (type === 'flow') {
+    return `<div class="diag-wrap">
+      <svg viewBox="0 0 320 80" style="width:100%">
+        <rect x="8" y="22" width="84" height="36" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+        <text x="50" y="44" text-anchor="middle" fill="#2563eb" font-size="13" font-weight="700">A</text>
+        <line x1="92" y1="40" x2="118" y2="40" stroke="#93c5fd" stroke-width="2" marker-end="url(#arr)"/>
+        <rect x="118" y="22" width="84" height="36" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+        <text x="160" y="44" text-anchor="middle" fill="#2563eb" font-size="13" font-weight="700">B</text>
+        <line x1="202" y1="40" x2="228" y2="40" stroke="#93c5fd" stroke-width="2"/>
+        <rect x="228" y="22" width="84" height="36" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+        <text x="270" y="44" text-anchor="middle" fill="#2563eb" font-size="13" font-weight="700">C</text>
+        <defs>
+          <marker id="arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+            <path d="M0,0 L7,3.5 L0,7 Z" fill="#93c5fd"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>`;
+  }
+  // Default triangle
+  return `<div class="diag-wrap">
+    <svg viewBox="0 0 280 170" style="width:100%">
+      <polygon points="140,16 22,158 258,158" fill="#f0f9ff" stroke="#93c5fd" stroke-width="2"/>
+      <circle cx="140" cy="16" r="17" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+      <circle cx="22"  cy="158" r="17" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+      <circle cx="258" cy="158" r="17" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+      <text x="140" y="21"  text-anchor="middle" fill="#2563eb" font-size="13" dominant-baseline="middle" font-weight="800">A</text>
+      <text x="22"  y="163" text-anchor="middle" fill="#2563eb" font-size="13" dominant-baseline="middle" font-weight="800">B</text>
+      <text x="258" y="163" text-anchor="middle" fill="#2563eb" font-size="13" dominant-baseline="middle" font-weight="800">C</text>
+      <text x="140" y="95"  text-anchor="middle" fill="#bfdbfe" font-size="12">Diagram</text>
+    </svg>
+  </div>`;
+}
+
+// ── Answer Handlers ───────────────────────────────────────────────────────────
+function recAns(qid, val) {
+  S.answers[qid] = val;
+  $(`qc-${qid}`).classList.toggle('answered', val.trim().length > 0);
+  checkDone();
+}
+
+function pickMC(qid, letter, el) {
+  document.querySelectorAll(`#mc-${qid} .mc-opt`).forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  S.answers[qid] = letter;
+  $(`qc-${qid}`).classList.add('answered');
+  checkDone();
+}
+
+function recMatch(qid, key, val) {
+  if (!S.answers[qid]) S.answers[qid] = {};
+  S.answers[qid][key] = val;
+  const sec = S.sections[S.currentSection];
+  const q = sec.questions.find(x => x.id == qid);
+  const keys = q.items || q.labels || [];
+  const allFilled = keys.every(k => S.answers[qid] && S.answers[qid][k]);
+  $(`qc-${qid}`).classList.toggle('answered', allFilled);
+  checkDone();
+}
+
+function checkDone() {
+  const sec = S.sections[S.currentSection];
+  const ok = sec.questions.every(q => {
+    const a = S.answers[q.id];
+    if (q.type === 'fill_blank')      return a && a.trim().length > 0;
+    if (q.type === 'multiple_choice') return !!a;
+    if (q.type === 'matching')        return q.items.every(k => a && a[k]);
+    if (q.type === 'diagram_label')   return q.labels.every(k => a && a[k]);
+    return false;
+  });
+  $('btnNext').disabled = !ok;
+  $('nextHint').style.display = ok ? 'none' : '';
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+async function goNext() {
+  window.speechSynthesis.cancel();
+  const a = $('uploadedAudioEl');
+  if (a) { a.pause(); a.src = ''; }
+  const next = S.currentSection + 1;
+  if (next < S.sections.length) {
+    beginSection(next);
+  } else {
+    await submitTest();
+  }
+}
+
+async function submitTest() {
+  showScreen('generating');
+  $('genStatus').textContent = 'Calculating your score...';
+  $('genSteps').innerHTML = '';
+  $('genBar').style.width = '80%';
+
+  const ans = {};
+  Object.entries(S.answers).forEach(([k, v]) => { ans[String(k)] = v; });
+
+  try {
+    const res = await fetch('/api/score', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sections: S.sections, answers: ans })
+    });
+    const data = await res.json();
+    $('genBar').style.width = '100%';
+    await sleep(400);
+    showResults(data);
+  } catch (err) {
+    alert('Scoring error: ' + err.message);
+  }
+}
+
+// ── Results ───────────────────────────────────────────────────────────────────
+function showResults(data) {
+  $('bandVal').textContent = data.band;
+
+  // Color band score by performance
+  const b = parseFloat(data.band);
+  $('bandVal').style.color = b >= 7.5 ? '#16a34a' : b >= 6.0 ? '#2563eb' : b >= 5.0 ? '#d97706' : '#dc2626';
+
+  $('resultsSub').textContent = `${data.total} out of ${data.max} questions correct`;
+
+  // Section score pills
+  const pills = $('secPills'); pills.innerHTML = '';
+  data.sections.forEach(s => {
+    pills.innerHTML += `<div class="sec-pill">
+      <span class="lbl">S${s.section_id}</span>${s.correct}/${s.total}
+    </div>`;
+  });
+
+  // Review accordion
+  const acc = $('reviewAcc'); acc.innerHTML = '';
+  data.sections.forEach((sec, i) => {
+    const orig = S.sections[i];
+    const rows = sec.questions.map(qr => {
+      const oq = orig.questions.find(q => q.id == qr.id) || {};
+      let user = typeof qr.user === 'object' && qr.user
+        ? Object.entries(qr.user).map(([k,v]) => `${k}: ${v||'?'}`).join(' · ')
+        : (qr.user || '(blank)');
+      let exp = typeof qr.expected === 'object' && qr.expected
+        ? Object.entries(qr.expected).map(([k,v]) => `${k}: ${v}`).join(' · ')
+        : String(qr.expected || '');
+      return `<div class="rev-row">
+        <span class="rev-icon">${qr.correct ? '✅' : '❌'}</span>
+        <div>
+          <div class="rev-prompt">Q${qr.id}: ${oq.prompt || ''}</div>
+          <div class="${qr.correct ? 'rev-correct' : 'rev-wrong'}">Your answer: ${user}</div>
+          ${!qr.correct ? `<div class="rev-expected">✓ Correct: ${exp}</div>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+
+    const score = sec.correct === sec.total
+      ? `<span style="color:#16a34a;font-family:monospace;font-size:13px">${sec.correct}/${sec.total} ✓</span>`
+      : `<span style="color:#2563eb;font-family:monospace;font-size:13px">${sec.correct}/${sec.total}</span>`;
+
+    acc.innerHTML += `<div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button"
+          data-bs-toggle="collapse" data-bs-target="#rev${i}">
+          ${orig.title}
+          <span class="ms-auto me-3">${score}</span>
+        </button>
+      </h2>
+      <div id="rev${i}" class="accordion-collapse collapse">
+        <div class="accordion-body">${rows}</div>
+      </div>
+    </div>`;
+  });
+
+  showScreen('results');
+}
+
+// ── Audio Source ──────────────────────────────────────────────────────────────
+function setAudioMode(m) {
+  S.audioMode = m;
+  $('btnTTS').classList.toggle('active', m === 'tts');
+  $('btnUpload').classList.toggle('active', m === 'upload');
+}
+function triggerUpload() { $('audioFileInput').click(); }
+function handleUpload(e) {
+  const f = e.target.files[0]; if (!f) return;
+  if (S.uploadedURL) URL.revokeObjectURL(S.uploadedURL);
+  S.uploadedURL = URL.createObjectURL(f);
+  S.audioMode = 'upload';
+  $('btnTTS').classList.remove('active');
+  $('btnUpload').classList.add('active');
+  $('uploadStatus').style.display = '';
+  $('uploadName').textContent = f.name;
+}
+
+// ── Restart ───────────────────────────────────────────────────────────────────
+function restartApp() {
+  window.speechSynthesis.cancel();
+  clearInterval(S.raInterval);
+  const a = $('uploadedAudioEl');
+  if (a) { a.pause(); a.src = ''; }
+  if (S.uploadedURL) URL.revokeObjectURL(S.uploadedURL);
+  Object.assign(S, {
+    sections: [], currentSection: 0, answers: {},
+    audioMode: 'tts', uploadedURL: null,
+    audioPlayed: false, audioPlaying: false,
+    raInterval: null, topic: ''
+  });
+  $('topicInput').value = '';
+  $('btnStart').disabled = false;
+  $('startSpinner').style.display = 'none';
+  showScreen('home');
+}
+
+// Load TTS voices eagerly
+window.speechSynthesis.getVoices();
+window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+</script>
+</body>
+</html>
