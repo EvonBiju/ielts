@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IELTS Reading Module</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    body { background: #f5f7fb; }
+    .container-narrow { max-width: 980px; margin: 0 auto; padding: 28px 18px; }
+    .card-soft { border: 1px solid #dbe3f1; border-radius: 14px; background: white; }
+    .passage-text { white-space: pre-line; line-height: 1.7; color: #1f2a44; }
+  </style>
+</head>
+<body>
+  <div class="container-narrow">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="mb-0">IELTS Reading Module</h2>
+      <a href="/" class="btn btn-outline-secondary btn-sm">Listening Module</a>
+    </div>
+
+    <div class="card-soft p-3 mb-4">
+      <label class="form-label">Topic (optional)</label>
+      <div class="d-flex gap-2">
+        <input id="topicInput" class="form-control" placeholder="e.g. urban farming, marine ecology" />
+        <button id="generateBtn" class="btn btn-primary">Generate Module</button>
+      </div>
+      <small class="text-muted">Creates 3 passages × 5 questions.</small>
+    </div>
+
+    <div id="status" class="mb-3 text-muted"></div>
+    <div id="moduleWrap"></div>
+    <div class="mt-3 mb-5">
+      <button id="scoreBtn" class="btn btn-success" style="display:none;">Score Answers</button>
+    </div>
+    <div id="resultWrap"></div>
+  </div>
+
+  <script>
+    let moduleData = null;
+
+    function renderQuestion(q) {
+      if (q.type === 'multiple_choice') {
+        return `
+          <p class="mb-2"><strong>Q${q.id}.</strong> ${q.prompt}</p>
+          ${q.options.map(opt => {
+            const letter = (opt.match(/^[A-D]/) || [''])[0];
+            return `<div class="form-check mb-1">
+              <input class="form-check-input" type="radio" name="q_${q.id}" value="${letter}" id="q_${q.id}_${letter}">
+              <label class="form-check-label" for="q_${q.id}_${letter}">${opt}</label>
+            </div>`
+          }).join('')}
+        `;
+      }
+      return `
+        <p class="mb-2"><strong>Q${q.id}.</strong> ${q.prompt}</p>
+        <input class="form-control" id="q_${q.id}" placeholder="Your answer" />
+      `;
+    }
+
+    function renderModule(module) {
+      const html = module.passages.map(p => `
+        <div class="card-soft p-3 mb-4">
+          <h4>${p.title}</h4>
+          <p class="passage-text">${p.text}</p>
+          <hr>
+          ${p.questions.map(q => `<div class="mb-3">${renderQuestion(q)}</div>`).join('')}
+        </div>
+      `).join('');
+      document.getElementById('moduleWrap').innerHTML = html;
+      document.getElementById('scoreBtn').style.display = 'inline-block';
+    }
+
+    function collectAnswers() {
+      const answers = {};
+      moduleData.passages.forEach(p => {
+        p.questions.forEach(q => {
+          if (q.type === 'multiple_choice') {
+            const selected = document.querySelector(`input[name="q_${q.id}"]:checked`);
+            answers[String(q.id)] = selected ? selected.value : '';
+          } else {
+            answers[String(q.id)] = document.getElementById(`q_${q.id}`)?.value || '';
+          }
+        });
+      });
+      return answers;
+    }
+
+    document.getElementById('generateBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('generateBtn');
+      const status = document.getElementById('status');
+      btn.disabled = true;
+      status.textContent = 'Generating reading module...';
+      document.getElementById('moduleWrap').innerHTML = '';
+      document.getElementById('resultWrap').innerHTML = '';
+
+      try {
+        const res = await fetch('/api/reading/generate-module', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic: document.getElementById('topicInput').value })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.detail || 'Generation failed');
+        moduleData = data.module;
+        renderModule(moduleData);
+        status.textContent = 'Module ready. Complete all questions and click Score Answers.';
+      } catch (err) {
+        status.textContent = err.message;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById('scoreBtn').addEventListener('click', async () => {
+      if (!moduleData) return;
+      const answers = collectAnswers();
+      const res = await fetch('/api/reading/score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ module: moduleData, answers })
+      });
+      const data = await res.json();
+      document.getElementById('resultWrap').innerHTML = `
+        <div class="alert alert-info">Score: <strong>${data.total}/${data.max}</strong> | Estimated Band: <strong>${data.band}</strong></div>
+      `;
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

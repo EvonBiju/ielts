@@ -219,9 +219,112 @@ class ScoreRequest(BaseModel):
     answers: dict
 
 
+class GenerateReadingRequest(BaseModel):
+    topic: str = ""
+
+
+class ReadingScoreRequest(BaseModel):
+    module: dict
+    answers: dict
+
+
+def build_reading_prompt(topic: str) -> str:
+    topic_hint = f"Focus theme: {topic}." if topic else "Pick realistic IELTS Academic themes."
+    return f"""You are an IELTS Reading examiner. Create one full practice reading module.
+
+{topic_hint}
+
+Rules:
+- Return JSON only.
+- Create exactly 3 passages.
+- Each passage needs 220-320 words.
+- Each passage needs exactly 5 questions.
+- Use a mix of question types: true_false_not_given, multiple_choice, and short_answer.
+- Keep answer keys concise.
+
+JSON shape:
+{{
+  "title": "IELTS Reading Practice Module",
+  "passages": [
+    {{
+      "id": 1,
+      "title": "Passage 1 title",
+      "text": "passage text",
+      "questions": [
+        {{
+          "id": 1,
+          "type": "true_false_not_given",
+          "prompt": "Statement",
+          "answer": "TRUE",
+          "acceptedAnswers": ["TRUE", "T"]
+        }},
+        {{
+          "id": 2,
+          "type": "multiple_choice",
+          "prompt": "Question",
+          "options": ["A. ...", "B. ...", "C. ...", "D. ..."],
+          "answer": "B",
+          "acceptedAnswers": ["B"]
+        }},
+        {{
+          "id": 3,
+          "type": "short_answer",
+          "prompt": "Question",
+          "wordLimit": "NO MORE THAN TWO WORDS",
+          "answer": "sample",
+          "acceptedAnswers": ["sample"]
+        }}
+      ]
+    }}
+  ]
+}}"""
+
+
+def validate_reading_module(data: dict) -> dict:
+    data.setdefault("title", "IELTS Reading Practice Module")
+    passages = data.get("passages")
+    if not isinstance(passages, list) or len(passages) != 3:
+        raise ValueError("Reading module must contain exactly 3 passages")
+
+    qid = 1
+    for p_index, passage in enumerate(passages, start=1):
+        passage["id"] = p_index
+        passage.setdefault("title", f"Passage {p_index}")
+        if len(passage.get("text", "")) < 120:
+            raise ValueError(f"Passage {p_index} text too short")
+
+        questions = passage.get("questions")
+        if not isinstance(questions, list) or len(questions) != 5:
+            raise ValueError(f"Passage {p_index} must contain exactly 5 questions")
+
+        for q in questions:
+            q["id"] = qid
+            qid += 1
+            q_type = q.get("type", "short_answer")
+            q["type"] = q_type
+            q.setdefault("prompt", "Answer based on the passage.")
+            if q_type == "multiple_choice":
+                q.setdefault("options", ["A. ", "B. ", "C. ", "D. "])
+                q.setdefault("answer", "A")
+                q.setdefault("acceptedAnswers", [q["answer"]])
+            else:
+                answer = str(q.get("answer", "")).strip()
+                q["answer"] = answer
+                accepted = q.get("acceptedAnswers") or [answer]
+                q["acceptedAnswers"] = [str(a).strip().lower() for a in accepted if str(a).strip()]
+                if not q["acceptedAnswers"]:
+                    q["acceptedAnswers"] = [answer.lower()]
+    return data
+
+
 @app.get("/")
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.get("/reading")
+async def reading_home(request: Request):
+    return templates.TemplateResponse("reading.html", {"request": request})
 
 
 @app.post("/api/generate-section")
@@ -310,6 +413,88 @@ async def score_test(req: ScoreRequest):
         "max": sum(len(s["questions"]) for s in req.sections),
         "band": get_band(total),
         "sections": results
+    })
+
+
+@app.post("/api/reading/generate-module")
+async def generate_reading_module(req: GenerateReadingRequest):
+    prompt = build_reading_prompt(req.topic)
+    last_error = ""
+
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            async with httpx.AsyncClient(timeout=180.0) as client:
+                response = await client.post(OLLAMA_URL, json={
+                    "model": MODEL,
+                    "prompt": prompt,
+                    "stream": False,
+                    "options": {
+                        "temperature": 0.5 if attempt > 1 else 0.65,
+                        "top_p": 0.9,
+                        "num_predict": 3200
+                    }
+                })
+                result = response.json()
+                raw = result.get("response", "").strip()
+
+            data = extract_json(raw)
+            module = validate_reading_module(data)
+            return JSONResponse(content={"success": True, "module": module})
+
+        except httpx.ConnectError:
+            raise HTTPException(status_code=503, detail="Cannot connect to Ollama. Run: ollama serve")
+        except Exception as e:
+            last_error = str(e)
+            logger.warning(f"Reading module attempt {attempt} failed: {last_error}")
+
+    raise HTTPException(status_code=500, detail=f"Failed to generate reading module: {last_error}")
+
+
+@app.post("/api/reading/score")
+async def score_reading_module(req: ReadingScoreRequest):
+    module = req.module
+    answers = req.answers
+    total = 0
+    max_score = 0
+    passage_results = []
+
+    for passage in module.get("passages", []):
+        p_correct = 0
+        q_results = []
+        for q in passage.get("questions", []):
+            max_score += 1
+            user = answers.get(str(q.get("id")), "")
+            correct = False
+            if q.get("type") == "multiple_choice":
+                accepted = [str(a).strip().upper() for a in q.get("acceptedAnswers", [q.get("answer", "")])]
+                correct = str(user).strip().upper() in accepted
+            else:
+                accepted = [str(a).strip().lower() for a in q.get("acceptedAnswers", [])]
+                correct = str(user).strip().lower() in accepted
+            if correct:
+                total += 1
+                p_correct += 1
+            q_results.append({
+                "id": q.get("id"),
+                "prompt": q.get("prompt"),
+                "correct": correct,
+                "user": user,
+                "expected": q.get("answer")
+            })
+
+        passage_results.append({
+            "id": passage.get("id"),
+            "title": passage.get("title"),
+            "correct": p_correct,
+            "total": len(passage.get("questions", [])),
+            "questions": q_results
+        })
+
+    return JSONResponse(content={
+        "total": total,
+        "max": max_score,
+        "band": get_band(total),
+        "passages": passage_results
     })
 
 
