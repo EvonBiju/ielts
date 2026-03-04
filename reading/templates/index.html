@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IELTS Reading Module</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #f7f8fc;
+      --white: #ffffff;
+      --blue: #1a56db;
+      --blue-light: #eff4ff;
+      --blue-mid: #c7d7fd;
+      --green: #057a55;
+      --green-light: #f0fdf4;
+      --red: #c81e1e;
+      --red-light: #fef2f2;
+      --amber: #92400e;
+      --amber-light: #fffbeb;
+      --border: #e5e9f2;
+      --text: #111827;
+      --muted: #6b7280;
+      --faint: #9ca3af;
+      --radius: 14px;
+      --shadow: 0 2px 16px rgba(0,0,0,0.07);
+    }
+    * { box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Navbar ── */
+    .topbar {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 200;
+      box-shadow: 0 1px 12px rgba(0,0,0,0.06);
+    }
+    .topbar-logo {
+      width: 38px; height: 38px; border-radius: 9px;
+      background: linear-gradient(135deg, #1a56db, #1e40af);
+      color: #fff; font-weight: 800; font-size: 13px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .topbar-title { font-weight: 700; font-size: 16px; line-height: 1.2; }
+    .topbar-sub   { font-size: 11px; color: var(--muted); }
+    .badge-timer {
+      font-size: 15px; font-weight: 800; color: var(--blue);
+      background: var(--blue-light); border: 1px solid var(--blue-mid);
+      border-radius: 8px; padding: 5px 14px; font-variant-numeric: tabular-nums;
+      letter-spacing: 1px;
+    }
+    .badge-timer.urgent { color: var(--red); background: var(--red-light); border-color: #fecaca; animation: blink 1s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.5} }
+    .btn-restart {
+      font-size: 13px; font-weight: 600; border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 6px 14px; cursor: pointer; background: #fff;
+      color: var(--muted); transition: all 0.15s;
+    }
+    .btn-restart:hover { border-color: var(--blue); color: var(--blue); }
+
+    /* ── Screens ── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── HOME ── */
+    .home-hero {
+      max-width: 680px; margin: 0 auto; padding: 64px 20px 36px; text-align: center;
+    }
+    .home-eyebrow {
+      display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 2.5px;
+      color: var(--blue); text-transform: uppercase; background: var(--blue-light);
+      border: 1px solid var(--blue-mid); border-radius: 20px; padding: 5px 16px; margin-bottom: 22px;
+    }
+    .home-title {
+      font-family: 'Lora', Georgia, serif;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 700;
+      line-height: 1.12; color: #0f172a; margin-bottom: 16px;
+    }
+    .home-title em { font-style: normal; color: var(--blue); }
+    .home-sub { font-size: 16px; color: var(--muted); line-height: 1.75; margin-bottom: 36px; }
+    .feat-pills { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 32px; }
+    .feat-pill {
+      font-size: 12px; font-weight: 500; padding: 6px 15px; border-radius: 20px;
+      background: var(--white); border: 1px solid var(--border); color: #475569;
+    }
+    .info-box {
+      background: var(--amber-light); border: 1px solid #fde68a;
+      border-radius: 12px; padding: 14px 20px; font-size: 13.5px;
+      color: var(--amber); text-align: left; margin-bottom: 26px;
+    }
+    .topic-box {
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 14px; padding: 22px; text-align: left; margin-bottom: 28px;
+      box-shadow: var(--shadow);
+    }
+    .topic-lbl { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
+    .topic-inp {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 11px 16px; font-size: 15px; font-family: 'DM Sans', sans-serif;
+      color: var(--text); background: var(--bg); outline: none; transition: all 0.2s;
+    }
+    .topic-inp:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 3px rgba(26,86,219,0.1); }
+    .topic-inp::placeholder { color: #d1d5db; }
+    .btn-generate {
+      background: linear-gradient(135deg, #1a56db, #1e40af);
+      color: #fff; border: none; border-radius: 12px;
+      padding: 16px 52px; font-size: 16px; font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      box-shadow: 0 6px 22px rgba(26,86,219,0.35);
+      transition: all 0.2s; cursor: pointer;
+    }
+    .btn-generate:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(26,86,219,0.4); }
+    .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .passage-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 14px; margin-top: 40px; }
+    .p-card {
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 14px; padding: 22px; transition: all 0.2s; cursor: default;
+    }
+    .p-card:hover { border-color: var(--blue-mid); box-shadow: 0 6px 22px rgba(26,86,219,0.1); transform: translateY(-2px); }
+    .p-num { font-size: 32px; font-weight: 800; color: var(--blue-mid); margin-bottom: 8px; font-family: 'Lora', serif; }
+    .p-title { font-weight: 700; font-size: 15px; margin-bottom: 5px; }
+    .p-sub { font-size: 12px; color: var(--faint); }
+
+    /* ── GENERATING ── */
+    .gen-wrap { max-width: 500px; margin: 80px auto; text-align: center; padding: 0 20px; }
+    .gen-ring {
+      width: 64px; height: 64px; margin: 0 auto 28px;
+      border: 4px solid var(--border); border-top-color: var(--blue);
+      border-radius: 50%; animation: spin 0.85s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .gen-title { font-family: 'Lora', serif; font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+    .gen-sub { color: var(--muted); font-size: 15px; margin-bottom: 24px; }
+    .gen-prog { height: 6px; background: var(--border); border-radius: 4px; margin-bottom: 28px; overflow: hidden; }
+    .gen-bar  { height: 100%; background: linear-gradient(90deg, var(--blue), #60a5fa); border-radius: 4px; transition: width 0.5s ease; }
+    .step-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 16px; border-radius: 10px; margin-bottom: 8px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      font-size: 13px; color: var(--muted); text-align: left; transition: all 0.3s;
+    }
+    .step-row.active { background: var(--blue-light); border-color: var(--blue-mid); color: #1e40af; font-weight: 600; }
+    .step-row.done   { background: var(--green-light); border-color: #86efac; color: var(--green); font-weight: 600; }
+
+    /* ── TEST LAYOUT ── */
+    .test-layout {
+      display: grid; grid-template-columns: 1fr 1fr;
+      height: calc(100vh - 61px); overflow: hidden;
+    }
+    @media (max-width: 900px) {
+      .test-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: auto; }
+      .passage-pane { max-height: 45vh; }
+    }
+
+    /* Left pane — passage */
+    .passage-pane {
+      border-right: 2px solid var(--border);
+      overflow-y: auto; padding: 28px 32px;
+      background: var(--white);
+    }
+    .passage-pane::-webkit-scrollbar { width: 6px; }
+    .passage-pane::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .passage-nav {
+      display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .pnav-btn {
+      padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      border: 1.5px solid var(--border); background: var(--bg); color: var(--muted);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .pnav-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .pnav-btn:hover:not(.active) { border-color: var(--blue-mid); color: var(--blue); }
+    .passage-title {
+      font-family: 'Lora', serif; font-size: 20px; font-weight: 700;
+      margin-bottom: 6px; color: #0f172a; line-height: 1.3;
+    }
+    .passage-topic { font-size: 12px; color: var(--muted); font-style: italic; margin-bottom: 20px; }
+    .passage-body {
+      font-family: 'Lora', serif; font-size: 15px; line-height: 1.85;
+      color: #1f2937;
+    }
+    .passage-body .para { margin-bottom: 16px; }
+    .para-label {
+      font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 13px;
+      color: var(--blue); margin-right: 10px; background: var(--blue-light);
+      padding: 1px 7px; border-radius: 4px; display: inline-block;
+    }
+    .passage-body mark {
+      background: #fef9c3; border-radius: 3px; padding: 1px 2px;
+    }
+
+    /* Right pane — questions */
+    .questions-pane {
+      overflow-y: auto; padding: 28px 28px 40px;
+      background: var(--bg);
+    }
+    .questions-pane::-webkit-scrollbar { width: 6px; }
+    .questions-pane::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .q-section-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2px solid var(--border);
+    }
+    .q-section-title { font-weight: 700; font-size: 15px; }
+    .q-count-badge {
+      font-size: 12px; font-weight: 600; color: var(--blue);
+      background: var(--blue-light); border: 1px solid var(--blue-mid);
+      border-radius: 20px; padding: 3px 12px;
+    }
+
+    .q-card {
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 20px; margin-bottom: 12px;
+      transition: border-color 0.2s; box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+    }
+    .q-card.answered { border-color: var(--blue-mid); }
+    .q-num { font-size: 11px; font-weight: 700; color: var(--blue); letter-spacing: 1px; margin-bottom: 7px; }
+    .q-prompt { font-size: 14.5px; color: #1e293b; line-height: 1.65; margin-bottom: 14px; font-weight: 500; }
+    .word-lim {
+      display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px;
+      border-radius: 20px; background: var(--amber-light); border: 1px solid #fde68a;
+      color: var(--amber); margin-bottom: 10px;
+    }
+    .q-inp {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 9px;
+      padding: 10px 15px; font-size: 14.5px; font-family: 'DM Sans', sans-serif;
+      color: var(--text); background: var(--bg); outline: none; transition: all 0.2s;
+    }
+    .q-inp:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 3px rgba(26,86,219,0.1); }
+    .q-inp::placeholder { color: #d1d5db; }
+
+    /* MC */
+    .mc-opt {
+      padding: 10px 16px; border-radius: 9px; cursor: pointer;
+      border: 1.5px solid var(--border); background: var(--bg);
+      color: #475569; font-size: 14px; margin-bottom: 8px;
+      transition: all 0.15s; user-select: none; font-weight: 500;
+    }
+    .mc-opt:hover { border-color: var(--blue-mid); background: var(--blue-light); color: #1e40af; }
+    .mc-opt.sel { border-color: var(--blue); background: var(--blue-light); color: #1e40af; font-weight: 700; }
+
+    /* TFN */
+    .tfng-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tfng-btn {
+      padding: 9px 20px; border-radius: 9px; cursor: pointer; font-size: 13.5px;
+      font-weight: 600; border: 1.5px solid var(--border); background: var(--bg);
+      color: var(--muted); transition: all 0.15s; user-select: none;
+    }
+    .tfng-btn:hover { border-color: var(--blue-mid); color: var(--blue); background: var(--blue-light); }
+    .tfng-btn.sel-true  { border-color: var(--green); background: var(--green-light); color: var(--green); }
+    .tfng-btn.sel-false { border-color: var(--red);   background: var(--red-light);   color: var(--red); }
+    .tfng-btn.sel-ng    { border-color: #d97706; background: #fffbeb; color: #92400e; }
+
+    /* Matching headings */
+    .mh-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .mh-para { font-size: 13.5px; color: #475569; min-width: 120px; font-weight: 600; }
+    .mh-arrow { color: var(--blue); font-weight: 700; }
+    .q-sel {
+      border: 1.5px solid var(--border); border-radius: 9px;
+      padding: 8px 12px; font-size: 13px; color: var(--text);
+      background: var(--bg); cursor: pointer; outline: none;
+      min-width: 200px; max-width: 100%; font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+    }
+    .q-sel:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,86,219,0.1); background: #fff; }
+
+    /* Submit bar */
+    .submit-bar {
+      position: sticky; bottom: 0;
+      background: rgba(247,248,252,0.95); backdrop-filter: blur(8px);
+      border-top: 1.5px solid var(--border);
+      padding: 14px 28px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .submit-hint { font-size: 12px; color: var(--faint); }
+    .btn-submit {
+      background: linear-gradient(135deg, #1a56db, #1e40af);
+      color: #fff; border: none; border-radius: 10px;
+      padding: 12px 36px; font-size: 14px; font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(26,86,219,0.3);
+    }
+    .btn-submit:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(26,86,219,0.4); }
+    .btn-submit:disabled { background: var(--border); color: var(--faint); box-shadow: none; cursor: not-allowed; transform: none; }
+
+    /* ── RESULTS ── */
+    .results-wrap { max-width: 820px; margin: 0 auto; padding: 52px 20px; }
+    .results-eyebrow {
+      display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      background: var(--green-light); border: 1px solid #86efac; color: var(--green);
+      border-radius: 20px; padding: 5px 16px; text-transform: uppercase; margin-bottom: 14px;
+    }
+    .results-title {
+      font-family: 'Lora', serif; font-size: 38px; font-weight: 700;
+      color: #0f172a; margin-bottom: 28px;
+    }
+    .band-card {
+      display: inline-block; padding: 30px 60px;
+      background: linear-gradient(135deg, var(--blue-light), #dbeafe);
+      border: 2px solid var(--blue-mid); border-radius: 20px; margin-bottom: 26px;
+      box-shadow: 0 8px 28px rgba(26,86,219,0.15);
+    }
+    .band-lbl { font-size: 11px; font-weight: 700; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+    .band-val { font-family: 'Lora', serif; font-size: 76px; font-weight: 700; color: var(--blue); line-height: 1; }
+    .results-sub { color: var(--muted); font-size: 16px; margin-bottom: 24px; }
+    .passage-pills { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .p-pill {
+      padding: 9px 22px; border-radius: 10px; font-size: 14px; font-weight: 600;
+      background: var(--white); border: 1.5px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .p-pill .lbl { color: var(--blue); margin-right: 6px; }
+
+    .review-title { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; margin: 40px 0 18px; }
+    .accordion-item { border-radius: 12px !important; margin-bottom: 10px; border: 1.5px solid var(--border) !important; overflow: hidden; }
+    .accordion-button { font-weight: 700; font-size: 15px; background: var(--white) !important; color: var(--text) !important; }
+    .accordion-button:not(.collapsed) { background: var(--blue-light) !important; color: #1e40af !important; box-shadow: none !important; }
+    .accordion-body { background: var(--bg); padding: 16px 22px; }
+    .rev-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f1f5f9; font-size: 13.5px; }
+    .rev-row:last-child { border-bottom: none; }
+    .rev-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+    .rev-type { font-size: 10px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+    .rev-prompt { color: var(--muted); font-size: 12.5px; margin-bottom: 3px; }
+    .rev-ok   { color: var(--green); font-weight: 600; }
+    .rev-err  { color: var(--red); font-weight: 600; }
+    .rev-exp  { color: var(--green); font-size: 12px; margin-top: 3px; }
+    .btn-new {
+      border: 2px solid var(--blue); color: var(--blue); background: var(--white);
+      border-radius: 12px; padding: 14px 44px; font-size: 15px; font-weight: 700;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-new:hover { background: var(--blue-light); }
+  </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="d-flex align-items-center gap-3">
+    <div class="topbar-logo">IR</div>
+    <div>
+      <div class="topbar-title">IELTS Reading</div>
+      <div class="topbar-sub">AI-Powered · Free with Ollama · <span id="modelBadge">detecting model...</span></div>
+    </div>
+  </div>
+  <div class="d-flex align-items-center gap-2">
+    <div class="badge-timer" id="globalTimer" style="display:none">10:00</div>
+    <button class="btn-restart" id="btnRestart" onclick="restartApp()" style="display:none">
+      <i class="bi bi-arrow-counterclockwise me-1"></i>Restart
+    </button>
+  </div>
+</div>
+
+<!-- ── HOME ─────────────────────────────────────────────────────────────── -->
+<div id="screen-home" class="screen active">
+  <div class="home-hero">
+    <div class="home-eyebrow">British Council · IDP · Cambridge Assessment</div>
+    <h1 class="home-title">AI-Generated<br/><em>IELTS Reading</em></h1>
+    <p class="home-sub">
+      Every test is unique. Powered by Ollama (<span id="modelName">auto-detect</span>).<br/>
+      3 Passages · 15 Questions · <strong>10 Minutes</strong>
+    </p>
+    <div class="feat-pills">
+      <span class="feat-pill"><i class="bi bi-cpu me-1"></i>AI Generated</span>
+      <span class="feat-pill"><i class="bi bi-file-text me-1"></i>Long Passages</span>
+      <span class="feat-pill"><i class="bi bi-ui-radios me-1"></i>Multiple Choice</span>
+      <span class="feat-pill"><i class="bi bi-check2-circle me-1"></i>True/False/NG</span>
+      <span class="feat-pill"><i class="bi bi-pencil me-1"></i>Fill in Blank</span>
+      <span class="feat-pill"><i class="bi bi-list-ul me-1"></i>Matching Headings</span>
+      <span class="feat-pill"><i class="bi bi-chat-square-text me-1"></i>Short Answer</span>
+      <span class="feat-pill"><i class="bi bi-clock me-1"></i>10 min Timer</span>
+    </div>
+    <div class="info-box">
+      <i class="bi bi-info-circle-fill me-2"></i>
+      <strong>Quick IELTS Reading Practice:</strong> 3 passages, 15 questions, 10 minutes.
+      Passages increase in difficulty. Answer all questions — no negative marking.
+    </div>
+    <div class="topic-box">
+      <div class="topic-lbl">Optional: Topic Theme</div>
+      <input type="text" id="topicInput" class="topic-inp"
+        placeholder="e.g. Climate Change, Neuroscience, Ancient Rome, Business Innovation..."/>
+      <div class="mt-2" style="font-size:12px; color:#9ca3af;">Leave blank for a random IELTS-style topic</div>
+    </div>
+    <button class="btn-generate" id="btnStart" onclick="startTest()">
+      <i class="bi bi-stars me-2"></i>Generate &amp; Begin Reading Test
+      <span id="startSpinner" class="spinner-border spinner-border-sm ms-2" style="display:none"></span>
+    </button>
+    <div id="homeErr" style="display:none; color:#c81e1e; font-weight:600; font-size:14px; margin-top:14px;"></div>
+  </div>
+
+  <div class="container-lg pb-5 px-4">
+    <p style="font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:#9ca3af;font-weight:700;margin-bottom:14px;">Test Structure</p>
+    <div class="passage-cards">
+      <div class="p-card">
+        <div class="p-num">01</div>
+        <div class="p-title">General Interest</div>
+        <div class="p-sub">350–450 words · 5 questions · Easy</div>
+      </div>
+      <div class="p-card">
+        <div class="p-num">02</div>
+        <div class="p-title">Social / Workplace</div>
+        <div class="p-sub">350–450 words · 5 questions · Medium</div>
+      </div>
+      <div class="p-card">
+        <div class="p-num">03</div>
+        <div class="p-title">Academic / Scientific</div>
+        <div class="p-sub">350–450 words · 5 questions · Hard</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── GENERATING ─────────────────────────────────────────────────────────── -->
+<div id="screen-generating" class="screen">
+  <div class="gen-wrap">
+    <div class="gen-ring"></div>
+    <h4 class="gen-title">Generating Your Test</h4>
+    <p id="genStatus" class="gen-sub">Starting Qwen 2.5...</p>
+    <div class="gen-prog">
+      <div id="genBar" class="gen-bar" style="width:5%"></div>
+    </div>
+    <div id="genSteps"></div>
+  </div>
+</div>
+
+<!-- ── TEST ───────────────────────────────────────────────────────────────── -->
+<div id="screen-test" class="screen">
+  <div class="test-layout">
+
+    <!-- LEFT: Passage -->
+    <div class="passage-pane" id="passagePane">
+      <div class="passage-nav" id="passageNav"></div>
+      <div class="passage-title" id="passageTitle"></div>
+      <div class="passage-topic" id="passageTopic"></div>
+      <div class="passage-body" id="passageBody"></div>
+    </div>
+
+    <!-- RIGHT: Questions -->
+    <div class="questions-pane" id="questionsPane">
+      <div class="q-section-hdr">
+        <div class="q-section-title" id="qSectionTitle">Questions</div>
+        <div class="q-count-badge" id="qCountBadge"></div>
+      </div>
+      <div id="questionsContainer"></div>
+      <div class="submit-bar">
+        <div class="submit-hint" id="submitHint">Answer all questions to submit</div>
+        <button class="btn-submit" id="btnSubmit" onclick="submitTest()" disabled>
+          Submit Test
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── RESULTS ────────────────────────────────────────────────────────────── -->
+<div id="screen-results" class="screen">
+  <div class="results-wrap text-center">
+    <div class="results-eyebrow">Test Complete</div>
+    <h2 class="results-title">Your Results</h2>
+    <div class="band-card">
+      <div class="band-lbl">IELTS Band Score</div>
+      <div class="band-val" id="bandVal">—</div>
+    </div>
+    <p class="results-sub" id="resultsSub"></p>
+    <div class="passage-pills" id="passagePills"></div>
+
+    <div class="text-start">
+      <div class="review-title">Detailed Review</div>
+      <div class="accordion" id="reviewAcc"></div>
+    </div>
+    <div class="mt-5">
+      <button class="btn-new" onclick="restartApp()">
+        <i class="bi bi-arrow-counterclockwise me-2"></i>Generate New Test
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ── State ─────────────────────────────────────────────────────────────────────
+const S = {
+  passages: [],
+  answers: {},           // { questionId: answer }
+  activePassage: 0,      // index of currently viewed passage
+  timerInterval: null,
+  secondsLeft: 10 * 60, // 10 min
+  topic: ''
+};
+
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  $(`screen-${name}`).classList.add('active');
+  $('btnRestart').style.display = name === 'home' ? 'none' : '';
+  $('globalTimer').style.display = name === 'test' ? '' : 'none';
+}
+
+function typeLabel(t) {
+  return {
+    multiple_choice: 'Multiple Choice',
+    true_false_ng: 'True / False / Not Given',
+    fill_blank: 'Fill in Blank',
+    matching_headings: 'Matching Headings',
+    short_answer: 'Short Answer'
+  }[t] || t;
+}
+
+// ── Timer ─────────────────────────────────────────────────────────────────────
+function startTimer() {
+  clearInterval(S.timerInterval);
+  S.secondsLeft = 10 * 60;
+  S.timerInterval = setInterval(() => {
+    S.secondsLeft--;
+    const m = Math.floor(S.secondsLeft / 60);
+    const s = S.secondsLeft % 60;
+    const txt = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    $('globalTimer').textContent = txt;
+    if (S.secondsLeft <= 120) $('globalTimer').classList.add('urgent');
+    if (S.secondsLeft <= 0) { clearInterval(S.timerInterval); submitTest(); }
+  }, 1000);
+}
+
+// ── Start Test ────────────────────────────────────────────────────────────────
+async function startTest() {
+  S.topic = $('topicInput').value.trim();
+  S.passages = []; S.answers = {}; S.activePassage = 0;
+  $('btnStart').disabled = true;
+  $('startSpinner').style.display = '';
+  $('homeErr').style.display = 'none';
+  showScreen('generating');
+
+  const stepLabels = [
+    'Passage 1: General Interest Topic',
+    'Passage 2: Social / Workplace Topic',
+    'Passage 3: Academic / Scientific Topic'
+  ];
+  const stepsEl = $('genSteps'); stepsEl.innerHTML = '';
+  stepLabels.forEach((lbl, i) => {
+    stepsEl.innerHTML += `<div class="step-row" id="step-${i}">
+      <span id="sicon-${i}">⏳</span> ${lbl}
+    </div>`;
+  });
+
+  for (let i = 0; i < 3; i++) {
+    $(`step-${i}`).classList.add('active');
+    $(`sicon-${i}`).textContent = '🔄';
+    $('genStatus').textContent = `Generating Passage ${i+1} of 3 with Qwen 2.5...`;
+    $('genBar').style.width = `${i * 33 + 5}%`;
+
+    try {
+      const res = await fetch('/api/generate-passage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ passage_number: i + 1, topic: S.topic })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.detail || 'Generation failed');
+      S.passages.push(data.passage);
+      $(`step-${i}`).classList.remove('active');
+      $(`step-${i}`).classList.add('done');
+      $(`sicon-${i}`).textContent = '✅';
+      $('genBar').style.width = `${(i + 1) * 33}%`;
+    } catch (err) {
+      showScreen('home');
+      $('homeErr').style.display = '';
+      $('homeErr').textContent = '⚠ ' + err.message;
+      $('btnStart').disabled = false;
+      $('startSpinner').style.display = 'none';
+      return;
+    }
+  }
+
+  $('genStatus').textContent = 'All passages ready!';
+  await sleep(500);
+  $('btnStart').disabled = false;
+  $('startSpinner').style.display = 'none';
+  buildTestScreen();
+  showScreen('test');
+  startTimer();
+}
+
+// ── Build Test Screen ─────────────────────────────────────────────────────────
+function buildTestScreen() {
+  // Passage nav tabs
+  const nav = $('passageNav'); nav.innerHTML = '';
+  S.passages.forEach((p, i) => {
+    nav.innerHTML += `<button class="pnav-btn ${i===0?'active':''}" id="pnav-${i}" onclick="switchPassage(${i})">
+      Passage ${i+1}
+    </button>`;
+  });
+
+  // Build all question cards (all passages)
+  const qWrap = $('questionsContainer'); qWrap.innerHTML = '';
+  S.passages.forEach(p => {
+    const section = document.createElement('div');
+    section.id = `psec-${p.id}`;
+    section.style.display = p.id === 1 ? '' : 'none';
+    section.innerHTML = `<div class="q-section-hdr mb-3">
+      <div class="q-section-title">${p.title}</div>
+      <div class="q-count-badge">Questions ${p.questions[0]?.id}–${p.questions[p.questions.length-1]?.id}</div>
+    </div>`;
+    p.questions.forEach(q => section.appendChild(buildQCard(q)));
+    qWrap.appendChild(section);
+  });
+
+  switchPassage(0);
+  checkAllDone();
+}
+
+function switchPassage(idx) {
+  S.activePassage = idx;
+  const p = S.passages[idx];
+
+  // Update passage nav
+  document.querySelectorAll('.pnav-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+
+  // Update passage display
+  $('passageTitle').textContent = p.title;
+  $('passageTopic').textContent = p.topic;
+
+  // Render passage with paragraph labels highlighted
+  const body = $('passageBody');
+  const paras = p.passage.split(/\n\n+/);
+  body.innerHTML = paras.map(para => {
+    const trimmed = para.trim();
+    if (!trimmed) return '';
+    // Check if paragraph starts with a label like "A  text..." or "A. text"
+    const labelMatch = trimmed.match(/^([A-Z])\s{1,3}/);
+    if (labelMatch) {
+      const label = labelMatch[1];
+      const rest = trimmed.slice(labelMatch[0].length);
+      return `<div class="para"><span class="para-label">${label}</span>${rest}</div>`;
+    }
+    return `<div class="para">${trimmed}</div>`;
+  }).join('');
+
+  // Show only this passage's questions
+  S.passages.forEach(pp => {
+    const sec = $(`psec-${pp.id}`);
+    if (sec) sec.style.display = pp.id === p.id ? '' : 'none';
+  });
+
+  // Update section header
+  const qRange = `Questions ${p.questions[0]?.id}–${p.questions[p.questions.length-1]?.id}`;
+  $('qSectionTitle').textContent = `Passage ${p.id} Questions`;
+  $('qCountBadge').textContent = qRange;
+
+  // Scroll both panes to top
+  $('passagePane').scrollTop = 0;
+  $('questionsPane').scrollTop = 0;
+}
+
+// ── Question Card ─────────────────────────────────────────────────────────────
+function buildQCard(q) {
+  const card = document.createElement('div');
+  card.className = 'q-card'; card.id = `qc-${q.id}`;
+
+  let h = `<div class="q-num">Q${q.id} · ${typeLabel(q.type)}</div>
+            <div class="q-prompt">${q.prompt}</div>`;
+
+  if (q.type === 'multiple_choice') {
+    h += `<div id="mc-${q.id}">`;
+    const letters = ['A','B','C','D'];
+    (q.options || []).forEach((opt, idx) => {
+      const hasPrefix = /^[A-D][.)\s]/.test(opt.trim());
+      const label = hasPrefix ? opt : `${letters[idx]}. ${opt}`;
+      const letter = letters[idx];
+      h += `<div class="mc-opt" onclick="pickMC(${q.id},'${letter}',this)">${label}</div>`;
+    });
+    h += '</div>';
+
+  } else if (q.type === 'true_false_ng') {
+    h += `<div class="tfng-row" id="tfng-${q.id}">
+      <div class="tfng-btn" onclick="pickTFNG(${q.id},'True',this)"><i class="bi bi-check-circle me-1"></i>True</div>
+      <div class="tfng-btn" onclick="pickTFNG(${q.id},'False',this)"><i class="bi bi-x-circle me-1"></i>False</div>
+      <div class="tfng-btn" onclick="pickTFNG(${q.id},'Not Given',this)"><i class="bi bi-question-circle me-1"></i>Not Given</div>
+    </div>`;
+
+  } else if (q.type === 'fill_blank' || q.type === 'short_answer') {
+    h += `<div class="word-lim">✏ ${q.wordLimit || 'NO MORE THAN THREE WORDS'}</div>
+          <input type="text" class="q-inp" id="inp-${q.id}"
+            placeholder="Type your answer..."
+            oninput="recAns(${q.id}, this.value)"/>`;
+
+  } else if (q.type === 'matching_headings') {
+    (q.paragraphs || []).forEach(para => {
+      const sp = para.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+      h += `<div class="mh-row">
+        <span class="mh-para">${para}</span>
+        <span class="mh-arrow">→</span>
+        <select class="q-sel" onchange="recMatch(${q.id},'${sp}',this.value)">
+          <option value="">Select heading...</option>
+          ${(q.headings || []).map(hd => `<option value="${hd}">${hd}</option>`).join('')}
+        </select>
+      </div>`;
+    });
+  }
+
+  card.innerHTML = h;
+  return card;
+}
+
+// ── Answer Handlers ───────────────────────────────────────────────────────────
+function recAns(qid, val) {
+  S.answers[qid] = val;
+  $(`qc-${qid}`)?.classList.toggle('answered', val.trim().length > 0);
+  checkAllDone();
+}
+
+function pickMC(qid, letter, el) {
+  document.querySelectorAll(`#mc-${qid} .mc-opt`).forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  S.answers[qid] = letter;
+  $(`qc-${qid}`)?.classList.add('answered');
+  checkAllDone();
+}
+
+function pickTFNG(qid, val, el) {
+  const row = $(`tfng-${qid}`);
+  row.querySelectorAll('.tfng-btn').forEach(b => b.classList.remove('sel-true','sel-false','sel-ng'));
+  const cls = val === 'True' ? 'sel-true' : val === 'False' ? 'sel-false' : 'sel-ng';
+  el.classList.add(cls);
+  S.answers[qid] = val;
+  $(`qc-${qid}`)?.classList.add('answered');
+  checkAllDone();
+}
+
+function recMatch(qid, key, val) {
+  if (!S.answers[qid]) S.answers[qid] = {};
+  S.answers[qid][key] = val;
+  const allPassages = S.passages;
+  let q = null;
+  for (const p of allPassages) {
+    q = p.questions.find(x => x.id == qid);
+    if (q) break;
+  }
+  if (q) {
+    const keys = q.paragraphs || [];
+    const full = keys.every(k => S.answers[qid]?.[k]);
+    $(`qc-${qid}`)?.classList.toggle('answered', full);
+  }
+  checkAllDone();
+}
+
+function checkAllDone() {
+  const allQ = S.passages.flatMap(p => p.questions);
+  const answered = allQ.filter(q => {
+    const a = S.answers[q.id];
+    if (!a) return false;
+    if (q.type === 'fill_blank' || q.type === 'short_answer') return String(a).trim().length > 0;
+    if (q.type === 'multiple_choice' || q.type === 'true_false_ng') return !!a;
+    if (q.type === 'matching_headings') return (q.paragraphs||[]).every(k => a?.[k]);
+    return false;
+  }).length;
+  const total = allQ.length;
+  const allDone = answered === total;
+  $('btnSubmit').disabled = !allDone;
+  $('submitHint').textContent = allDone
+    ? 'All questions answered — ready to submit!'
+    : `${answered}/${total} questions answered`;
+  $('submitHint').style.color = allDone ? '#057a55' : '#9ca3af';
+}
+
+// ── Submit ────────────────────────────────────────────────────────────────────
+async function submitTest() {
+  clearInterval(S.timerInterval);
+  showScreen('generating');
+  $('genStatus').textContent = 'Calculating your score...';
+  $('genSteps').innerHTML = '';
+  $('genBar').style.width = '80%';
+
+  const ans = {};
+  Object.entries(S.answers).forEach(([k, v]) => { ans[String(k)] = v; });
+
+  try {
+    const res = await fetch('/api/score', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ passages: S.passages, answers: ans })
+    });
+    const data = await res.json();
+    $('genBar').style.width = '100%';
+    await sleep(400);
+    showResults(data);
+  } catch (err) {
+    alert('Scoring error: ' + err.message);
+  }
+}
+
+// ── Results ───────────────────────────────────────────────────────────────────
+function showResults(data) {
+  const b = parseFloat(data.band);
+  $('bandVal').textContent = data.band;
+  $('bandVal').style.color = b >= 7.5 ? '#057a55' : b >= 6.0 ? '#1a56db' : b >= 5.0 ? '#d97706' : '#c81e1e';
+  $('resultsSub').textContent = `${data.total} out of ${data.max} questions correct`;
+
+  const pills = $('passagePills'); pills.innerHTML = '';
+  data.passages.forEach(p => {
+    pills.innerHTML += `<div class="p-pill">
+      <span class="lbl">P${p.passage_id}</span>${p.correct}/${p.total}
+    </div>`;
+  });
+
+  const acc = $('reviewAcc'); acc.innerHTML = '';
+  data.passages.forEach((p, i) => {
+    const orig = S.passages[i];
+    const rows = p.questions.map(qr => {
+      const oq = orig.questions.find(q => q.id == qr.id) || {};
+      let user = typeof qr.user === 'object' && qr.user
+        ? Object.entries(qr.user).map(([k,v]) => `${k}: ${v||'?'}`).join(' · ')
+        : (qr.user || '(blank)');
+      let exp = typeof qr.expected === 'object' && qr.expected
+        ? Object.entries(qr.expected).map(([k,v]) => `${k}: ${v}`).join(' · ')
+        : String(qr.expected || '');
+      return `<div class="rev-row">
+        <span class="rev-icon">${qr.correct ? '✅' : '❌'}</span>
+        <div>
+          <div class="rev-type">${typeLabel(qr.type || '')}</div>
+          <div class="rev-prompt">Q${qr.id}: ${oq.prompt || ''}</div>
+          <div class="${qr.correct ? 'rev-ok' : 'rev-err'}">Your answer: ${user}</div>
+          ${!qr.correct ? `<div class="rev-exp">✓ Correct: ${exp}</div>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+
+    const score = p.correct === p.total
+      ? `<span style="color:#057a55;font-weight:700;font-size:13px">${p.correct}/${p.total} ✓</span>`
+      : `<span style="color:#1a56db;font-weight:700;font-size:13px">${p.correct}/${p.total}</span>`;
+
+    acc.innerHTML += `<div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button"
+          data-bs-toggle="collapse" data-bs-target="#rev${i}">
+          ${orig.title}
+          <span class="ms-auto me-3">${score}</span>
+        </button>
+      </h2>
+      <div id="rev${i}" class="accordion-collapse collapse">
+        <div class="accordion-body">${rows}</div>
+      </div>
+    </div>`;
+  });
+
+  showScreen('results');
+}
+
+// ── Restart ───────────────────────────────────────────────────────────────────
+function restartApp() {
+  clearInterval(S.timerInterval);
+  Object.assign(S, {
+    passages: [], answers: {}, activePassage: 0,
+    timerInterval: null, secondsLeft: 600, topic: ''
+  });
+  $('topicInput').value = '';
+  $('btnStart').disabled = false;
+  $('startSpinner').style.display = 'none';
+  $('globalTimer').classList.remove('urgent');
+  showScreen('home');
+}
+</script>
+</body>
+</html>
